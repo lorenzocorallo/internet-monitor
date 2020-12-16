@@ -1,17 +1,16 @@
 """
 Name:           internet_monitor.py
 Author:         Lorenzo Corallo
-Description:    Monitor Internet connectivity and record time and duration 
-                of any downtime.
+Description:    Monitor Internet connectivity and record time and duration of any downtime.
 
 Date:           15th October 2020
-Version:        1.0
+Version:        1.0.0
 
 
 How to run:		To run this program from the Console/Terminal, type:
 					python internet_monitor.py
 
-This program checks every X (5) seconds whether the Internet connection
+This program checks every X (1) seconds whether the Internet connection
 is alive and an external IP address is reachable.
 If the Internet connection is unavailable:
     1. The first observed time of failure is logged. 
@@ -32,15 +31,92 @@ Features:
 """
 
 import signal
-from signal_handler import signal_handler
 import datetime
 import time
 import sys
 import argparse
-from logger import logger
-from calc_time_diff import calc_time_diff
+import datetime
 
-from is_internet_alive import is_internet_alive
+import datetime
+import sys
+import socket
+
+import logging
+
+# Get logger instance by __name__ (__main__ or filename)
+logger = logging.getLogger(__name__)
+
+# Setting logging format into a variable
+formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s", "%d-%m-%Y %H:%M")
+
+# Create handler for logging (filename, level, debug)
+file_handler  = logging.FileHandler(f"{__name__}.log")
+
+# Set formatter
+file_handler.setFormatter(formatter)
+
+# Adding handler to logger instance
+logger.addHandler(file_handler)
+
+# Set logging Level
+logger.setLevel(logging.DEBUG)
+
+def signal_handler(signal_received, frame):
+    """ Capture Ctrl-C (or SIGINT) and exit the program gracefully. 
+
+    Input Params:
+        signal_received (integer) is the signal number captured and received.
+        frame (frame object) is the current stack frame.
+
+    Returns:
+        This method exits the program, thus nothing is returned.
+    """
+
+    # Display exit message to console and record in log file.
+    logger.debug(f"Monitor stopped")
+    sys.exit()
+
+def is_internet_alive(host="8.8.8.8", port=53, timeout=3):
+    """Check if Internet Connection is alive and external IP address is reachable.
+
+    Input Parameters:
+        host: (string) 8.8.8.8 (google-public-dns-a.google.com)
+        port: (integer) (53/tcp DNS Service).
+        timeout: (float) timeout in seconds.
+
+    Returns:
+        True (Boolean) if external IP address is reachable.
+        False (Boolean) if external IP address is unreachable.
+    """
+
+    try:
+        socket.setdefaulttimeout(timeout)
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect((host, port))
+    except OSError:
+        # print(error.strerror)
+        print("Disconnected")
+        return False
+    else:
+        s.close()
+        print("Connected")
+        return True
+
+def calc_time_diff(start, end):
+    """ Calculate duration between two times and return as HH:MM:SS
+
+    Input Params:
+        start and end times
+        both datetime objects created from datetime.datetime.now()
+
+    Returns:
+        The duration (string) in the form HH:MM:SS
+    """
+
+    time_difference = end - start
+    secs = str(time_difference.total_seconds())
+    return str(datetime.timedelta(seconds=float(secs))).split(".")[0]
+
 
 def parse_args(args=sys.argv[1:]):
     """Parse arguments."""
