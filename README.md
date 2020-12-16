@@ -16,7 +16,7 @@ Monitor Internet connectivity and record time and duration of any downtime.
 
 Name: internet_monitor
 
-Version: 1.0.1
+Version: 1.0.2
 
 Date: 15th December 2020
 

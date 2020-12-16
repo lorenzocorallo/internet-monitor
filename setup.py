@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="internet-monitor",
-    version="1.0.1",
+    version="1.0.2",
     author="Lorenzo Corallo",
     author_email="info@lorenzocorallo.it",
     description="Monitor Internet connectivity and record time and duration",
