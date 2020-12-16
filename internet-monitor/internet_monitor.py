@@ -176,5 +176,4 @@ def monitor(polling_freq = 1):
             logger.info(duration_msg)
 
 args = parse_args()
-print(args)
 monitor(args.polling_freq)
